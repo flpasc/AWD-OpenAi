@@ -1,0 +1,47 @@
+services:
+  # Express Backend
+  backend:
+    build:
+      context: ./backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:mypassword@db:5432/postgresdb
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: always
+    depends_on:
+      - db
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: always
+
+  # Postgres DB
+  db:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: postgresdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
