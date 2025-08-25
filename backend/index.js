@@ -17,6 +17,12 @@ const sql = postgres({
 });
 
 const client = new OpenAI();
+const response = client.responses.create({
+  model: "gpt-4o-mini-2024-07-18",
+  input: "Say hello to my new app",
+});
+
+console.log(response);
 
 const userMessage =
   await sql`INSERT INTO messages (session_id, content) VALUES (${sessionId} ${message}) RETURNING id,created_at`;
